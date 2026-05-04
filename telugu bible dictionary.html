@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>తెలుగు బైబిల్ నిఘంటువు | Telugu Bible Dictionary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', 'Noto Sans Telugu', sans-serif;
+        }
+        
+        .telugu-font {
+            font-family: 'Noto Sans Telugu', sans-serif;
+        }
+        
+        .search-box:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .word-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .word-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .highlight {
+            background-color: #FEF08A;
+        }
+        
+        .loader {
+            border-top-color: #3B82F6;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-blue-800 mb-2 telugu-font">తెలుగు బైబిల్ నిఘంటువు</h1>
+            <p class="text-lg text-gray-600 telugu-font">బైబిల్ పదాల అర్థాలు మరియు వివరణలు</p>
+        </header>
+        
+        <!-- Search Section -->
+        <div class="max-w-3xl mx-auto mb-12">
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="పదాన్ని శోధించండి..." 
+                       class="w-full px-6 py-4 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500 search-box telugu-font text-lg">
+                <button id="searchBtn" class="absolute right-3 top-3 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <div class="flex justify-center mt-4 space-x-4 telugu-font">
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="అ">అ</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="ఆ">ఆ</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="ఇ">ఇ</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="ఈ">ఈ</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="ఉ">ఉ</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="ఊ">ఊ</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="ఎ">ఎ</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200" data-letter="ఏ">ఏ</button>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div id="resultsContainer" class="max-w-4xl mx-auto">
+            <div id="loader" class="hidden text-center py-12">
+                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
+                <p class="text-gray-600 telugu-font">ఫలితాలు లోడ్ అవుతున్నాయి...</p>
+            </div>
+            
+            <div id="noResults" class="hidden text-center py-12">
+                <i class="fas fa-book-open text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600 text-xl telugu-font">ఫలితాలు కనుగొనబడలేదు. దయచేసి వేరే పదాన్ని ప్రయత్నించండి.</p>
+            </div>
+            
+            <div id="wordList" class="grid md:grid-cols-2 gap-6">
+                <!-- Word cards will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-blue-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4 text-center telugu-font">
+            <p>© 2023 తెలుగు బైబిల్ నిఘంటువు. అన్ని హక్కులు ప్రత్యేకించబడ్డాయి.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" class="hover:text-blue-200">గోప్యతా విధానం</a>
+                <a href="#" class="hover:text-blue-200">సేవా నిబంధనలు</a>
+                <a href="#" class="hover:text-blue-200">సంప్రదించండి</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Sample Bible dictionary data in Telugu
+        const bibleDictionary = [
+            {
+                word: "అనుగ్రహం",
+                meaning: "దేవుని కృప లేదా దయ. ఇది మనకు అర్హత లేకపోయినా దేవుడు మనకు ఇచ్చే ఉపకారం.",
+                reference: "ఎఫెసీయులు 2:8",
+                examples: ["దేవుని అనుగ్రహం వలన మనం రక్షింపబడ్డాము."]
+            },
+            {
+                word: "ఆత్మ",
+                meaning: "దేవుని ఆత్మ లేదా మనుష్యునిలోని అంతరాత్మ. పరిశుద్ధాత్మ దేవుని ఆత్మ, ఇది విశ్వాసులలో నివసిస్తుంది.",
+                reference: "రోమీయులు 8:9",
+                examples: ["ఆత్మ మనకు సహాయం చేస్తుంది.", "పరిశుద్ధాత్మ మనలను నడిపిస్తుంది."]
+            },
+            {
+                word: "ఇస్రాయేలు",
+                meaning: "దేవుడు యాకోబుకు ఇచ్చిన పేరు మరియు అతని సంతతి. ప్రత్యేకంగా దేవుని ఎన్నుకున్న ప్రజలు.",
+                reference: "ఆదికాండం 32:28",
+                examples: ["ఇస్రాయేలు దేవుని ప్రజలు.", "ఇస్రాయేలు దేశం ప్రత్యేకమైనది."]
+            },
+            {
+                word: "ఉపదేశం",
+                meaning: "దైవిక సత్యాలను బోధించడం లేదా నేర్పడం. బైబిల్ ఆధారిత బోధన.",
+                reference: "2 తిమోతి 3:16",
+                examples: ["ప్రభువు యేసు ఉపదేశాలు జీవితానికి మార్గదర్శకాలు."]
+            },
+            {
+                word: "ఎడారి",
+                meaning: "ఎండిపోయిన, నిర్జన ప్రదేశం. బైబిల్లో ఇది పరీక్షల సమయాన్ని సూచిస్తుంది.",
+                reference: "మత్తయి 4:1",
+                examples: ["యేసు ఎడారిలో 40 రోజులు ఉపవాసం ఉండి పరీక్షింపబడ్డాడు."]
+            },
+            {
+                word: "ఏకాగ్రత",
+                meaning: "దేవుని మీద పూర్తిగా దృష్టి పెట్టడం. ప్రార్థనలో లేదా ఆరాధనలో ఒకే దిశలో ఉండటం.",
+                reference: "కొలొస్సయులు 3:2",
+                examples: ["ఏకాగ్రతతో ప్రార్థించాలి.", "దేవుని మీద ఏకాగ్రత ఉంచండి."]
+            },
+            {
+                word: "ఆరాధన",
+                meaning: "దేవునికి కొనియాడడం, స్తుతించడం. హృదయపూర్వకమైన ఆరాధన దేవునికి ప్రీతికరం.",
+                reference: "యోహాను 4:24",
+                examples: ["ఆరాధన జీవిత మార్గంలో ముఖ్యమైన భాగం."]
+            },
+            {
+                word: "అపొస్తలుడు",
+                meaning: "పంపబడినవాడు, ప్రత్యేకంగా యేసు క్రీస్తు ద్వారా పంపబడిన శిష్యుడు.",
+                reference: "లూకా 6:13",
+                examples: ["పౌలు అపొస్తలుడిగా పిలువబడ్డాడు."]
+            }
+        ];
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const wordList = document.getElementById('wordList');
+        const loader = document.getElementById('loader');
+        const noResults = document.getElementById('noResults');
+
+        // Display all words initially
+        displayWords(bibleDictionary);
+
+        // Search functionality
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Filter by letter
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const letter = this.getAttribute('data-letter');
+                filterByLetter(letter);
+            });
+        });
+
+        function performSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            
+            if (searchTerm === '') {
+                displayWords(bibleDictionary);
+                return;
+            }
+            
+            showLoader();
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                const filteredWords = bibleDictionary.filter(word => {
+                    return word.word.toLowerCase().includes(searchTerm) || 
+                           word.meaning.toLowerCase().includes(searchTerm);
+                });
+                
+                hideLoader();
+                
+                if (filteredWords.length === 0) {
+                    showNoResults();
+                } else {
+                    displayWords(filteredWords, searchTerm);
+                }
+            }, 500);
+        }
+
+        function filterByLetter(letter) {
+            showLoader();
+            
+            setTimeout(() => {
+                const filteredWords = bibleDictionary.filter(word => {
+                    return word.word.startsWith(letter);
+                });
+                
+                hideLoader();
+                
+                if (filteredWords.length === 0) {
+                    showNoResults();
+                } else {
+                    displayWords(filteredWords);
+                }
+            }, 300);
+        }
+
+        function displayWords(words, highlightTerm = '') {
+            wordList.innerHTML = '';
+            
+            words.forEach(word => {
+                const wordCard = document.createElement('div');
+                wordCard.className = 'bg-white rounded-lg p-6 word-card telugu-font';
+                
+                // Highlight search term in meaning if present
+                let meaning = word.meaning;
+                if (highlightTerm) {
+                    const regex = new RegExp(highlightTerm, 'gi');
+                    meaning = meaning.replace(regex, match => `<span class="highlight">${match}</span>`);
+                }
+                
+                wordCard.innerHTML = `
+                    <h3 class="text-2xl font-bold text-blue-800 mb-2">${word.word}</h3>
+                    <p class="text-gray-700 mb-3">${meaning}</p>
+                    <div class="bg-blue-50 p-3 rounded">
+                        <p class="text-blue-700 font-medium"><i class="fas fa-bookmark mr-2"></i>${word.reference}</p>
+                        ${word.examples ? `
+                            <div class="mt-2">
+                                <p class="text-gray-600 font-medium"><i class="fas fa-lightbulb mr-2"></i>ఉదాహరణలు:</p>
+                                <ul class="list-disc list-inside ml-4 text-gray-600">
+                                    ${word.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                wordList.appendChild(wordCard);
+            });
+            
+            noResults.classList.add('hidden');
+        }
+
+        function showLoader() {
+            loader.classList.remove('hidden');
+            wordList.innerHTML = '';
+            noResults.classList.add('hidden');
+        }
+
+        function hideLoader() {
+            loader.classList.add('hidden');
+        }
+
+        function showNoResults() {
+            wordList.innerHTML = '';
+            noResults.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
